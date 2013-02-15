@@ -1,0 +1,2 @@
+# where to store plugin data "FlatFile" or "Database"
+Storage: Database

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cx.ath.fota</groupId>
+    <artifactId>DangerousFlight</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>DangerousFlight</name>
+
+    <properties>
+        <bukkit.version>1.4.7-R0.1</bukkit.version>
+        <jdk>1.6</jdk>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <main.class>cx.ath.fota.dangerousFlight.plugin.DangerousFlight</main.class>
+        <base.permissions.node>dangerousFlight</base.permissions.node>
+        <fly.permissions.node>${base.permissions.node}.fly</fly.permissions.node>
+        <fastFly.permissions.node>${base.permissions.node}.fastFly</fastFly.permissions.node>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>bukkit</id>
+            <name>bukkit</name>
+            <url>http://repo.bukkit.org/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>${bukkit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>3.2.0.RELEASE</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.name}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>${jdk}</source>
+                    <target>${jdk}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

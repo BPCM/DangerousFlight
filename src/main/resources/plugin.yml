@@ -1,0 +1,25 @@
+name: ${project.name}
+main: ${main.class}
+version: ${project.version}
+description: ${project.name} allows users to fly, but if they get hit, they get knocked out of the air.
+permissions:
+    ${base.permissions.node}.*:
+        description: Gives access to all ${project.name} commands
+        children:
+            ${fly.permissions.node}: true
+            ${fastFly.permissions.node}: true
+    ${fly.permissions.node}:
+        description: Is able to fly
+        default: op
+    ${fastFly.permissions.node}:
+        description: Is able to fast fly
+        default: op
+commands:
+   fly:
+        permission: ${fly.permissions.node}
+        description: Enable or disable flight
+        aliases: [f]
+   ff:
+        permission: ${fastFly.permissions.node}
+        description: Enable or disable fast flight
+database: true
