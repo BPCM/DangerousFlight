@@ -2,18 +2,18 @@ package cx.ath.fota.dangerousFlight.thread;
 
 public class PlayerDamaged extends Thread {
 
-    public PlayerDamaged(String playerName, int ticksPerHit) {
-        this.ticksPerHit = ticksPerHit;
-        super.getName();
-    }
-
     private final int ticksPerHit;
-    private volatile int ticks = ticksPerHit;
+    private volatile int ticks;
 
+    public PlayerDamaged(String playerName, int crippleDuration) {
+        super(playerName);
+        this.ticksPerHit = crippleDuration;
+        this.ticks = ticksPerHit;
+    }
 
     public void run() {
         while (ticks > 0) {
-            //      System.out.println(ticks + " " + getName());
+            System.out.println(ticks + " " + getName());
             ticks--;
             try {
                 sleep(1000L);
@@ -21,7 +21,7 @@ public class PlayerDamaged extends Thread {
                 e.printStackTrace();
             }
         }
-        //    System.out.println("DONE! " + getName());
+        System.out.println("DONE! " + getName());
     }
 
     public void playerHit() {

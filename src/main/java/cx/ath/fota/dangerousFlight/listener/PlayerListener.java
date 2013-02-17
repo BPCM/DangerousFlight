@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.potion.PotionEffect;
@@ -18,15 +17,30 @@ import java.util.HashMap;
 public class PlayerListener implements Listener {
 
     private volatile HashMap<Player, PlayerDamaged> playerDamagedHashMap = new HashMap<Player, PlayerDamaged>();
-    private final int effectDurationInSeconds = 3;
-    private final PotionEffect potionSlowEffect = new PotionEffect(PotionEffectType.SLOW, effectDurationInSeconds * 20, 3);
-    private final PotionEffect potionBlindEffect = new PotionEffect(PotionEffectType.BLINDNESS, effectDurationInSeconds * 20, 1);
     private final DangerousFlight dangerousFlight;
+    private int effectDurationInSeconds;
+    private final PotionEffect potionSlowEffect;
+    private final PotionEffect potionBlindEffect;
 
     public PlayerListener(DangerousFlight dangerousFlight) {
         this.dangerousFlight = dangerousFlight;
-    }
+        int defaultEffectDuration = 3;
+        int defaultStrength = 1;
+        try {
+            this.effectDurationInSeconds = Integer.parseInt(dangerousFlight.getConfig().get("CrippleDuration").toString(), defaultEffectDuration);
+        } catch (NumberFormatException e) {
+            this.effectDurationInSeconds = 3;
+            System.out.println("An integer was not entered for 'CrippleDuration', using defaults");
+        }
 
+        try {
+            defaultStrength = Integer.parseInt(dangerousFlight.getConfig().get("CrippleStrength", defaultStrength).toString());
+        } catch (NumberFormatException e) {
+            System.out.println("An integer was not entered for 'CrippleStrength', using defaults");
+        }
+        potionSlowEffect = new PotionEffect(PotionEffectType.SLOW, effectDurationInSeconds * 20, defaultStrength);
+        potionBlindEffect = new PotionEffect(PotionEffectType.BLINDNESS, effectDurationInSeconds * 20, defaultStrength);
+    }
 
     @EventHandler
     public void playerDamageEvent(EntityDamageEvent entityDamageEvent) {
@@ -81,11 +95,5 @@ public class PlayerListener implements Listener {
 
         }
     }
-
-    @EventHandler
-    public void ass(PlayerAnimationEvent playerAnimationEvent) {
-         playerAnimationEvent.getPlayer();
-    }
-
 }
 
