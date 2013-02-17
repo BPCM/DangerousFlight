@@ -47,7 +47,7 @@ public class DangerousFlight extends JavaPlugin {
             if (player.getAllowFlight() && player.getFlySpeed() == normalFlightSpeed)
                 disableFlight(player);
             else if (player.getAllowFlight() && player.getFlySpeed() == fastFlightSpeed) {
-                sendPlayerMessage(player,"Fast flight enabled");
+                sendPlayerMessage(player, "Fast flight enabled");
                 player.setFlySpeed(normalFlightSpeed);
             } else {
                 player.setFlySpeed(normalFlightSpeed);
@@ -59,7 +59,7 @@ public class DangerousFlight extends JavaPlugin {
             if (player.getAllowFlight() && player.getFlySpeed() == fastFlightSpeed)
                 disableFlight(player);
             else if (player.getAllowFlight() && player.getFlySpeed() == normalFlightSpeed) {
-                sendPlayerMessage(player,"Normal flight enabled!");
+                sendPlayerMessage(player, "Normal flight enabled!");
                 player.setFlySpeed(fastFlightSpeed);
             } else {
                 player.setFlySpeed(fastFlightSpeed);
@@ -72,10 +72,8 @@ public class DangerousFlight extends JavaPlugin {
 
     }
 
-   //todo private void fastFlightEnabled(){}
-
     private void disableFlight(Player player) {
-        sendPlayerMessage(player,"Flight disabled");
+        sendPlayerMessage(player, "Flight disabled");
         player.setAllowFlight(false);
     }
 

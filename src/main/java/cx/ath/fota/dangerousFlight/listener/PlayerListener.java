@@ -20,6 +20,7 @@ public class PlayerListener implements Listener {
     private final DangerousFlight dangerousFlight;
     private int effectDurationInSeconds;
     private final PotionEffect potionSlowEffect;
+    @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"}) //keeping this in for testing, not sure if I will add this effetc later
     private final PotionEffect potionBlindEffect;
 
     public PlayerListener(DangerousFlight dangerousFlight) {
@@ -46,20 +47,16 @@ public class PlayerListener implements Listener {
     public void playerDamageEvent(EntityDamageEvent entityDamageEvent) {
         if (entityDamageEvent.getEntity() instanceof Player) {
             Player player = (Player) entityDamageEvent.getEntity();
-            //   System.out.println("Player Hit!: " + player.getName());
             player.setFlying(false);
             player.addPotionEffect(potionSlowEffect, true);
             if (playerDamagedHashMap.containsKey(player)) {
                 if (playerDamagedHashMap.get(player).isAlive()) {
-                    //  System.out.println("Threads Alive!: " + player.getName());
                     playerDamagedHashMap.get(player).playerHit();
                 } else {
-                    //    System.out.println("Threads Dead!: " + player.getName());
                     playerDamagedHashMap.remove(player);
                     newPlayerHit(player);
                 }
             } else {
-                //  System.out.println("Brand new Player Hit!!: " + player.getName());
                 newPlayerHit(player);
             }
         }
