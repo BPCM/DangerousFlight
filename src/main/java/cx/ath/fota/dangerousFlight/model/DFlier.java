@@ -23,6 +23,12 @@ public class DFlier implements Serializable {
         this.playerName = player.getName();
     }
 
+    public DFlier() {
+        this.flying = false;
+        this.flightEnabled = false;
+        this.playerName = null;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long getId() {
