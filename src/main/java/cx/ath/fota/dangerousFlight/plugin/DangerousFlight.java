@@ -33,7 +33,8 @@ public class DangerousFlight extends JavaPlugin {
         saveConfig();
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         persistence = new PersistenceDatabase(this);
-      /*  if ("FlatFile".equalsIgnoreCase(getConfig().getString("Storage"))) {
+      /*  todo flat file persistence
+      if ("FlatFile".equalsIgnoreCase(getConfig().getString("Storage"))) {
             persistence = new PersistenceFlatFile(this);
         } else {
             persistence = new PersistenceDatabase(this);
@@ -45,25 +46,23 @@ public class DangerousFlight extends JavaPlugin {
         Player player = (Player) sender;
         if (command.getName().equals("fly")) {
             if (player.getAllowFlight() && player.getFlySpeed() == normalFlightSpeed)
-                disableFlight(player);
+                toggleFlight(player, false);
             else if (player.getAllowFlight() && player.getFlySpeed() == fastFlightSpeed) {
-                sendPlayerMessage(player, "Fast flight enabled");
-                player.setFlySpeed(normalFlightSpeed);
+                setFlySpeed(player,normalFlightSpeed);
             } else {
                 player.setFlySpeed(normalFlightSpeed);
-                enableFlight(player);
+                toggleFlight(player, true);
             }
             this.getPersistence().saveOrUpdate(new DFlier(player));
             return true;
         } else if (command.getName().equals("ff")) {
             if (player.getAllowFlight() && player.getFlySpeed() == fastFlightSpeed)
-                disableFlight(player);
+                toggleFlight(player, false);
             else if (player.getAllowFlight() && player.getFlySpeed() == normalFlightSpeed) {
-                sendPlayerMessage(player, "Normal flight enabled!");
-                player.setFlySpeed(fastFlightSpeed);
+                setFlySpeed(player, fastFlightSpeed);
             } else {
                 player.setFlySpeed(fastFlightSpeed);
-                enableFlight(player);
+                toggleFlight(player, true);
             }
             this.getPersistence().saveOrUpdate(new DFlier(player));
             return true;
@@ -72,14 +71,23 @@ public class DangerousFlight extends JavaPlugin {
 
     }
 
-    private void disableFlight(Player player) {
-        sendPlayerMessage(player, "Flight disabled");
-        player.setAllowFlight(false);
+    private void toggleFlight(Player player, boolean flying) {
+        if (flying)
+            sendFlightMessage(player);
+        else sendPlayerMessage(player, "Flight disabled");
+        player.setAllowFlight(flying);
     }
 
-    private void enableFlight(Player player) {
-        sendPlayerMessage(player, "Flight enabled");
-        player.setAllowFlight(true);
+    private void setFlySpeed(Player player, float flySpeed) {
+        player.setFlySpeed(flySpeed);
+        sendFlightMessage(player);
+
+    }
+
+    private void sendFlightMessage(Player player) {
+        if (player.getFlySpeed() == fastFlightSpeed)
+            sendPlayerMessage(player, "Fast Flight enabled");
+        else sendPlayerMessage(player, "Flight enabled");
     }
 
     private void sendPlayerMessage(Player player, String message) {

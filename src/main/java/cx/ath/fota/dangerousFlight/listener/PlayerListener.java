@@ -1,6 +1,7 @@
 package cx.ath.fota.dangerousFlight.listener;
 
-import cx.ath.fota.dangerousFlight.model.DFlier;
+import
+cx.ath.fota.dangerousFlight.model.DFlier;
 import cx.ath.fota.dangerousFlight.plugin.DangerousFlight;
 import cx.ath.fota.dangerousFlight.thread.PlayerDamaged;
 import org.bukkit.entity.Player;
@@ -20,7 +21,7 @@ public class PlayerListener implements Listener {
     private final DangerousFlight dangerousFlight;
     private int effectDurationInSeconds;
     private final PotionEffect potionSlowEffect;
-    @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"}) //keeping this in for testing, not sure if I will add this effetc later
+    @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"}) //keeping this in for testing, not sure if I will add this effect later
     private final PotionEffect potionBlindEffect;
 
     public PlayerListener(DangerousFlight dangerousFlight) {
