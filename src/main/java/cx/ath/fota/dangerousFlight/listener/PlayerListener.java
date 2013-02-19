@@ -1,7 +1,6 @@
 package cx.ath.fota.dangerousFlight.listener;
 
-import
-cx.ath.fota.dangerousFlight.model.DFlier;
+import cx.ath.fota.dangerousFlight.model.DFlier;
 import cx.ath.fota.dangerousFlight.plugin.DangerousFlight;
 import cx.ath.fota.dangerousFlight.thread.PlayerDamaged;
 import org.bukkit.entity.Player;
@@ -21,32 +20,32 @@ public class PlayerListener implements Listener {
     private final DangerousFlight dangerousFlight;
     private int effectDurationInSeconds;
     private final PotionEffect potionSlowEffect;
-    @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"}) //keeping this in for testing, not sure if I will add this effect later
+    //keeping this in for testing, not sure if I will add this effect later
     private final PotionEffect potionBlindEffect;
 
     public PlayerListener(DangerousFlight dangerousFlight) {
         this.dangerousFlight = dangerousFlight;
         int defaultEffectDuration = 3;
-        int defaultStrength = 1;
+        int defaultCrippleStrength = 1;
         try {
             this.effectDurationInSeconds = Integer.parseInt(dangerousFlight.getConfig().get("CrippleDuration").toString(), defaultEffectDuration);
         } catch (NumberFormatException e) {
-            this.effectDurationInSeconds = 3;
-            System.out.println("An integer was not entered for 'CrippleDuration', using defaults");
+            this.effectDurationInSeconds = defaultEffectDuration;
+            System.out.println("An integer was not entered for 'CrippleDuration', using default: " + defaultEffectDuration);
         }
 
         try {
-            defaultStrength = Integer.parseInt(dangerousFlight.getConfig().get("CrippleStrength", defaultStrength).toString());
+            defaultCrippleStrength = Integer.parseInt(dangerousFlight.getConfig().get("CrippleStrength", defaultCrippleStrength).toString());
         } catch (NumberFormatException e) {
-            System.out.println("An integer was not entered for 'CrippleStrength', using defaults");
+            System.out.println("An integer was not entered for 'CrippleStrength', using default: " + defaultCrippleStrength);
         }
-        potionSlowEffect = new PotionEffect(PotionEffectType.SLOW, effectDurationInSeconds * 20, defaultStrength);
-        potionBlindEffect = new PotionEffect(PotionEffectType.BLINDNESS, effectDurationInSeconds * 20, defaultStrength);
+        potionSlowEffect = new PotionEffect(PotionEffectType.SLOW, effectDurationInSeconds * 20, defaultCrippleStrength);
+        potionBlindEffect = new PotionEffect(PotionEffectType.BLINDNESS, effectDurationInSeconds * 20, defaultCrippleStrength);
     }
 
     @EventHandler
     public void playerDamageEvent(EntityDamageEvent entityDamageEvent) {
-        if (entityDamageEvent.getEntity() instanceof Player) {
+        if (entityDamageEvent.getEntity() instanceof Player && !(entityDamageEvent.getCause() == EntityDamageEvent.DamageCause.STARVATION)) {
             Player player = (Player) entityDamageEvent.getEntity();
             player.setFlying(false);
             player.addPotionEffect(potionSlowEffect, true);
@@ -64,7 +63,7 @@ public class PlayerListener implements Listener {
     }
 
     private void newPlayerHit(Player player) {
-        PlayerDamaged playerDamagedThread = new PlayerDamaged(player.getName(), effectDurationInSeconds);
+        PlayerDamaged playerDamagedThread = new PlayerDamaged(player, effectDurationInSeconds);
         this.playerDamagedHashMap.put(player, playerDamagedThread);
         playerDamagedThread.start();
     }
