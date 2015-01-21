@@ -21,7 +21,7 @@ public class PlayerListener implements Listener {
     private int effectDurationInSeconds;
     private final PotionEffect potionSlowEffect;
     //keeping this in for testing, not sure if I will add this effect later
-    private final PotionEffect potionBlindEffect;
+    // private final PotionEffect potionBlindEffect;
 
     public PlayerListener(DangerousFlight dangerousFlight) {
         this.dangerousFlight = dangerousFlight;
@@ -40,7 +40,7 @@ public class PlayerListener implements Listener {
             System.out.println("An integer was not entered for 'CrippleStrength', using default: " + defaultCrippleStrength);
         }
         potionSlowEffect = new PotionEffect(PotionEffectType.SLOW, effectDurationInSeconds * 20, defaultCrippleStrength);
-        potionBlindEffect = new PotionEffect(PotionEffectType.BLINDNESS, effectDurationInSeconds * 20, defaultCrippleStrength);
+        //   potionBlindEffect = new PotionEffect(PotionEffectType.BLINDNESS, effectDurationInSeconds * 20, defaultCrippleStrength);
     }
 
     @EventHandler
