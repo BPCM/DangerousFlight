@@ -65,5 +65,10 @@ public class DFlier implements Serializable {
     public void setFlying(Boolean flying) {
         this.flying = flying;
     }
+
+    @Override
+    public String toString() {
+        return String.format("DFlier:%s;%s;%s", playerName, flightEnabled, flying);
+    }
 }
 

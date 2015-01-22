@@ -1,6 +1,6 @@
 package cx.ath.fota.dangerousFlight.plugin;
 
-import cx.ath.fota.dangerousFlight.listener.PlayerListener;
+import cx.ath.fota.dangerousFlight.listener.DangerousListener;
 import cx.ath.fota.dangerousFlight.model.DFlier;
 import cx.ath.fota.dangerousFlight.persistance.Persistence;
 import cx.ath.fota.dangerousFlight.persistance.PersistenceDatabase;
@@ -20,8 +20,8 @@ public class DangerousFlight extends JavaPlugin {
     private final float normalFlightSpeed, fastFlightSpeed;
 
     public DangerousFlight() {
-        normalFlightSpeed = (float) .1;
-        fastFlightSpeed = (float) .5;
+        normalFlightSpeed = .1F;
+        fastFlightSpeed = .5F;
     }
 
     public void onDisable() {
@@ -31,7 +31,7 @@ public class DangerousFlight extends JavaPlugin {
         FileConfiguration fileConfiguration = getConfig();
         fileConfiguration.options().copyDefaults(true);
         saveConfig();
-        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        getServer().getPluginManager().registerEvents(new DangerousListener(this), this);
         persistence = new PersistenceDatabase(this);
       /*  todo flat file persistence
       if ("FlatFile".equalsIgnoreCase(getConfig().getString("Storage"))) {
@@ -44,50 +44,38 @@ public class DangerousFlight extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
-        if (command.getName().equals("fly")) {
-            if (player.getAllowFlight() && player.getFlySpeed() == normalFlightSpeed)
-                toggleFlight(player, false);
-            else if (player.getAllowFlight() && player.getFlySpeed() == fastFlightSpeed) {
-                setFlySpeed(player,normalFlightSpeed);
-            } else {
-                player.setFlySpeed(normalFlightSpeed);
-                toggleFlight(player, true);
+        String commandName = command.getName();
+        boolean b = false;
+        if (commandName.equals("fly")) {
+            if (sender.hasPermission("dangerousFlight.fly")) { //todo this string should not be static
+                handleFlightCommand(player, normalFlightSpeed);
+                b = true;
             }
-            this.getPersistence().saveOrUpdate(new DFlier(player));
-            return true;
-        } else if (command.getName().equals("ff")) {
-            if (player.getAllowFlight() && player.getFlySpeed() == fastFlightSpeed)
-                toggleFlight(player, false);
-            else if (player.getAllowFlight() && player.getFlySpeed() == normalFlightSpeed) {
-                setFlySpeed(player, fastFlightSpeed);
-            } else {
-                player.setFlySpeed(fastFlightSpeed);
-                toggleFlight(player, true);
+        } else if (commandName.equals("ff")) {
+            if (sender.hasPermission("dangerousFlight.fastFly")) {
+                handleFlightCommand(player, fastFlightSpeed);
+                b = true;
             }
-            this.getPersistence().saveOrUpdate(new DFlier(player));
-            return true;
         }
-        return false;
-
+        return b;
     }
 
-    private void toggleFlight(Player player, boolean flying) {
-        if (flying)
-            sendFlightMessage(player);
-        else sendPlayerMessage(player, "Flight disabled");
-        player.setAllowFlight(flying);
-    }
+    private void handleFlightCommand(Player player, float flightSpeed) {//todo english is your friend
 
-    private void setFlySpeed(Player player, float flySpeed) {
-        player.setFlySpeed(flySpeed);
-        sendFlightMessage(player);
-
-    }
-
-    private void sendFlightMessage(Player player) {
-        if (player.getFlySpeed() == fastFlightSpeed)
-            sendPlayerMessage(player, "Fast Flight enabled");
-        else sendPlayerMessage(player, "Flight enabled");
+        if (player.getAllowFlight()) {
+            if (player.getFlySpeed() == flightSpeed) {
+                player.setAllowFlight(false);
+                player.setFlySpeed(normalFlightSpeed);
+                sendPlayerMessage(player, "Flight disabled");
+            } else {
+                player.setFlySpeed(flightSpeed);
+                sendPlayerMessage(player, "Flight speed modified!");
+            }
+        } else {
+            player.setAllowFlight(true);
+            player.setFlySpeed(flightSpeed);
+            sendPlayerMessage(player, "Flight Enabled");
+        }
     }
 
     private void sendPlayerMessage(Player player, String message) {
@@ -99,6 +87,17 @@ public class DangerousFlight extends JavaPlugin {
         List<Class<?>> classes = new LinkedList<Class<?>>();
         classes.add(DFlier.class);
         return classes;
+    }
+
+    public int getNodeData(String nodeName, int defaultData) {
+        Integer integer = (Integer) getConfig().getDefaults().get(nodeName);
+        try {
+            return Integer.parseInt(getConfig().get(nodeName).toString());
+        } catch (NumberFormatException e) {
+            if (integer != null) defaultData = integer;
+            System.out.println(String.format("Configuration error - An Integer was not properly entered for '%s', using default: %s", nodeName, defaultData));
+            return defaultData;
+        }
     }
 
     @Override

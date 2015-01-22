@@ -1,3 +1,4 @@
+/*
 package cx.ath.fota.dangerousFlight.thread;
 
 import org.bukkit.entity.Player;
@@ -29,4 +30,4 @@ public class PlayerDamaged extends Thread {
     public void playerHit() {
         ticks = ticksPerHit;
     }
-}
+}*/
