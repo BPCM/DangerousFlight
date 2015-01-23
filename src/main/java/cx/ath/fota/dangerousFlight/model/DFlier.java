@@ -5,28 +5,29 @@ import org.bukkit.entity.Player;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.UUID;
 
 
 @Entity
 @Table(name = "dangerousFlight")
 @SuppressWarnings("UnusedDeclaration")
 public class DFlier implements Serializable {
-    private static final long serialVersionUID = 3952001110315770131L;
+    private static final long serialVersionUID = 1039415277400116126L;
     Long id;
-    String playerName;
+    UUID uuid;
     Boolean flightEnabled;
     Boolean flying;
 
     public DFlier(Player player) {
         this.flying = player.isFlying();
         this.flightEnabled = player.getAllowFlight();
-        this.playerName = player.getName();
+        this.uuid = player.getUniqueId();
     }
 
     public DFlier() {
         this.flying = false;
         this.flightEnabled = false;
-        this.playerName = null;
+        this.uuid = null;
     }
 
     @Id
@@ -39,13 +40,13 @@ public class DFlier implements Serializable {
         this.id = id;
     }
 
-    @Column(unique = true)
-    public String getPlayerName() {
-        return this.playerName;
+    @Column(unique = true, name = "uuid")
+    public UUID getUuid() {
+        return this.uuid;
     }
 
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     @Column
@@ -68,7 +69,7 @@ public class DFlier implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("DFlier:%s;%s;%s", playerName, flightEnabled, flying);
+        return String.format("DFlier:%s;%s;%s", uuid, flightEnabled, flying);
     }
 }
 

@@ -38,34 +38,6 @@ public class PlayerDamagedThread extends BukkitRunnable {
         canFly = true;
     }
 
-    /*    @Override
-        public void run() {
-            Thread counter = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (playerSignedIn) {
-                        allowFlight();
-                        if (!canFly) {
-                            playerDamagedLoop();
-                        }
-                    }
-                }
-            });
-            counter.start();
-        }*/
-/*    private void allowFlight() {
-
-        synchronized (lock) {
-            while (canFly) {
-                System.out.println("canFly loop started " + playerSignedIn);
-                try {
-                    lock.wait();
-                } catch (InterruptedException ignore) {
-                    System.out.println("Interrupted allow flight");
-                }
-            }
-        }
-    }*/
     private void allowFlight() {
         System.out.println("allowFlight entered " + playerSignedIn);
         synchronized (lock) {
@@ -121,6 +93,5 @@ public class PlayerDamagedThread extends BukkitRunnable {
         System.out.println("Death called!");
         loopCounter = 0;
         canFly = true;
-        //     allowFlight();
     }
 }

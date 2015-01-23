@@ -1,5 +1,3 @@
-# where to store plugin data "FlatFile" or "Database"
-#Storage: Database
 #Cripple Duration in seconds
 CrippleDuration: 3
 #Cripple strength

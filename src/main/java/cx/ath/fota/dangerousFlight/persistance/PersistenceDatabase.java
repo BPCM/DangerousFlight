@@ -4,6 +4,7 @@ import cx.ath.fota.dangerousFlight.model.DFlier;
 import cx.ath.fota.dangerousFlight.plugin.DangerousFlight;
 
 import javax.persistence.PersistenceException;
+import java.util.UUID;
 
 public class PersistenceDatabase implements Persistence {
 
@@ -23,8 +24,8 @@ public class PersistenceDatabase implements Persistence {
     }
 
     @Override
-    public DFlier findByName(final String playerName) {
-        return dangerousFlight.getDatabase().find(DFlier.class).where().eq("playerName", playerName).findUnique();
+    public DFlier findBuUUID(final UUID uuid) {
+        return dangerousFlight.getDatabase().find(DFlier.class).where().eq("uuid", uuid).findUnique();
     }
 
     @Override
@@ -40,7 +41,7 @@ public class PersistenceDatabase implements Persistence {
     @Override
     public void saveOrUpdate(DFlier dFlier) {
         DFlier dFlier1;
-        if ((dFlier1 = findByName(dFlier.getPlayerName())) != null) {
+        if ((dFlier1 = findBuUUID(dFlier.getUuid())) != null) {
             dFlier1.setFlying(dFlier.getFlying());
             dFlier1.setFlightEnabled(dFlier.getFlightEnabled());
             update(dFlier1);

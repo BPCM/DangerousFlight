@@ -33,12 +33,6 @@ public class DangerousFlight extends JavaPlugin {
         saveConfig();
         getServer().getPluginManager().registerEvents(new DangerousListener(this), this);
         persistence = new PersistenceDatabase(this);
-      /*  todo flat file persistence
-      if ("FlatFile".equalsIgnoreCase(getConfig().getString("Storage"))) {
-            persistence = new PersistenceFlatFile(this);
-        } else {
-            persistence = new PersistenceDatabase(this);
-        }*/
     }
 
     @Override

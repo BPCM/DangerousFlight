@@ -44,7 +44,7 @@ public class DangerousListener implements Listener {
         playerDamagedThread.run();
         playerThreadMap.put(player, playerDamagedThread);
         DFlier dFlier;
-        if ((dFlier = dangerousFlight.getPersistence().findByName(player.getName())) != null) {
+        if ((dFlier = dangerousFlight.getPersistence().findBuUUID(player.getUniqueId())) != null) {
             player.setAllowFlight(dFlier.getFlightEnabled());
             player.setFlying(dFlier.getFlying());
             DangerousLogger.debug("Loaded Player: " + dFlier.toString());
@@ -72,7 +72,7 @@ public class DangerousListener implements Listener {
     public void playerDamageEvent(EntityDamageEvent entityDamageEvent) {
         if (entityDamageEvent.getEntity() instanceof Player) {
             Player player = (Player) entityDamageEvent.getEntity();
-            if (player.hasPermission("${fly.permissions.node}")) ;
+            //   if (player.hasPermission("${fly.permissions.node}")) ;
             player.setFlying(false);
             player.addPotionEffect(potionSlowEffect, true);
             DangerousLogger.debug(player.getDisplayName() + " took damage.");
