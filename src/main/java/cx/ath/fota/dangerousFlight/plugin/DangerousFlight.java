@@ -60,8 +60,7 @@ public class DangerousFlight extends JavaPlugin {
         return b;
     }
 
-    private void handleFlightCommand(Player player, float flightSpeed) {//todo english is your friend
-
+    private void handleFlightCommand(Player player, float flightSpeed) {
         if (player.getAllowFlight()) {
             if (player.getFlySpeed() == flightSpeed) {
                 player.setAllowFlight(false);

@@ -1,6 +1,5 @@
 package cx.ath.fota.dangerousFlight.thread;
 
-import cx.ath.fota.dangerousFlight.logger.DangerousLogger;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerDamagedThread extends BukkitRunnable {
@@ -15,41 +14,67 @@ public class PlayerDamagedThread extends BukkitRunnable {
     }
 
     private void playerDamagedLoop() {
-
         loopCounter = crippleInSeconds;
-        DangerousLogger.debug("Player Damage Loop " + loopCounter);
+        System.out.println("Player Damage Loop " + loopCounter);
         while (loopCounter > 0) {
-            DangerousLogger.debug(Integer.toString(loopCounter));
+            System.out.println(Integer.toString(loopCounter) + " " + playerSignedIn);
             sleep();
             loopCounter--;
         }
         done();
     }
 
-    private void allowFlight() {
-        DangerousLogger.debug("Allow flight entered");
-        synchronized (lock) {
-            while (canFly) {
-                try {
-                    lock.wait();
-                } catch (InterruptedException ignore) {
-                    DangerousLogger.debug("Interrupted allow flight");
-                }
-            }
-        }
-    }
 
     private void sleep() {
         try {
-            Thread.sleep(crippleInSeconds * 1000L);
+            Thread.sleep(1000L);
         } catch (InterruptedException ignored) {
-            DangerousLogger.debug("Interrupted sleep");
+            System.out.println("Interrupted sleep");
         }
     }
 
     private void done() {
-        DangerousLogger.debug("canFly=true");
+        System.out.println("canFly=true");
         canFly = true;
+    }
+
+    /*    @Override
+        public void run() {
+            Thread counter = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (playerSignedIn) {
+                        allowFlight();
+                        if (!canFly) {
+                            playerDamagedLoop();
+                        }
+                    }
+                }
+            });
+            counter.start();
+        }*/
+/*    private void allowFlight() {
+
+        synchronized (lock) {
+            while (canFly) {
+                System.out.println("canFly loop started " + playerSignedIn);
+                try {
+                    lock.wait();
+                } catch (InterruptedException ignore) {
+                    System.out.println("Interrupted allow flight");
+                }
+            }
+        }
+    }*/
+    private void allowFlight() {
+        System.out.println("allowFlight entered " + playerSignedIn);
+        synchronized (lock) {
+            try {
+                lock.wait();
+            } catch (InterruptedException ignore) {
+                System.out.println("Interrupted allow flight");
+            }
+        }
     }
 
     @Override
@@ -57,20 +82,21 @@ public class PlayerDamagedThread extends BukkitRunnable {
         Thread counter = new Thread(new Runnable() {
             @Override
             public void run() {
-                do {
-                    allowFlight();
+                while (playerSignedIn) {
+                    System.out.println("run loop started " + playerSignedIn);
                     if (!canFly) {
                         playerDamagedLoop();
                     }
-                } while (playerSignedIn);
-                DangerousLogger.debug("THE WHILE LOOP IS OVER");
+                    allowFlight();
+                }
+                System.out.println("THIS THREAD IS DED");
             }
         });
         counter.start();
     }
 
     public void playerDamaged() {
-        DangerousLogger.debug("Lock.notifyAll() called!");
+        System.out.println("Lock.notifyAll() called!");
         canFly = false;
         loopCounter = crippleInSeconds;
         synchronized (lock) {
@@ -83,17 +109,18 @@ public class PlayerDamagedThread extends BukkitRunnable {
     }
 
     public void playerSignedOut() {
-
+        System.out.println("Called Player signed out!");
         playerSignedIn = false;
+        canFly = false;
         synchronized (lock) {
-
             lock.notifyAll();
         }
     }
 
     public void playerDeath() {
-        DangerousLogger.debug("Death called!");
+        System.out.println("Death called!");
         loopCounter = 0;
         canFly = true;
+        //     allowFlight();
     }
 }
