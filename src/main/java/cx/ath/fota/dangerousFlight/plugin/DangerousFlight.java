@@ -13,21 +13,25 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.LinkedList;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DangerousFlight extends JavaPlugin {
     private Persistence persistence;
     private final float normalFlightSpeed, fastFlightSpeed;
+    public final Logger logger = Logger.getLogger(DangerousFlight.class.getName());
 
     public DangerousFlight() {
-        normalFlightSpeed = .1F;
-        fastFlightSpeed = .5F;
+        normalFlightSpeed = getNodeData("NormalFlightSpeed", .1F);
+        fastFlightSpeed = getNodeData("FastFlightSpeed", .3F);
     }
 
     public void onDisable() {
     }
 
     public void onEnable() {
+        logger.setLevel(Level.INFO);
+
         FileConfiguration fileConfiguration = getConfig();
         fileConfiguration.options().copyDefaults(true);
         saveConfig();
@@ -41,15 +45,11 @@ public class DangerousFlight extends JavaPlugin {
         String commandName = command.getName();
         boolean b = false;
         if (commandName.equals("fly")) {
-            if (sender.hasPermission("dangerousFlight.fly")) { //todo this string should not be static
-                handleFlightCommand(player, normalFlightSpeed);
-                b = true;
-            }
+            handleFlightCommand(player, normalFlightSpeed);
+            b = true;
         } else if (commandName.equals("ff")) {
-            if (sender.hasPermission("dangerousFlight.fastFly")) {
-                handleFlightCommand(player, fastFlightSpeed);
-                b = true;
-            }
+            handleFlightCommand(player, fastFlightSpeed);
+            b = true;
         }
         return b;
     }
@@ -84,11 +84,26 @@ public class DangerousFlight extends JavaPlugin {
 
     public int getNodeData(String nodeName, int defaultData) {
         Integer integer = (Integer) getConfig().getDefaults().get(nodeName);
+        if (integer != null)
+            logger.warning(String.format("Loaded %s node via defaults with value: %s", nodeName, integer));
         try {
             return Integer.parseInt(getConfig().get(nodeName).toString());
         } catch (NumberFormatException e) {
             if (integer != null) defaultData = integer;
-            System.out.println(String.format("Configuration error - An Integer was not properly entered for '%s', using default: %s", nodeName, defaultData));
+            System.err.println(String.format("Configuration error - An Integer was not properly entered for '%s', using default: %s", nodeName, defaultData));
+            return defaultData;
+        }
+    }
+
+    public float getNodeData(String nodeName, float defaultData) {
+        Float aFloat = ((Double) getConfig().getDefaults().get(nodeName)).floatValue();
+        if (aFloat != null)
+            logger.warning(String.format("Loaded %s node via defaults with value:%s", nodeName, aFloat));
+        try {
+            return ((Double) getConfig().get(nodeName)).floatValue();
+        } catch (NumberFormatException e) {
+            if (aFloat != null) defaultData = aFloat;
+            System.err.println(String.format("Configuration error - An Float was not properly entered for '%s', using default: %s", nodeName, defaultData));
             return defaultData;
         }
     }

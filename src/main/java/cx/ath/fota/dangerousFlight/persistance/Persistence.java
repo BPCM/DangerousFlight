@@ -4,6 +4,7 @@ import cx.ath.fota.dangerousFlight.model.DFlier;
 
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public interface Persistence {
     DFlier findBuUUID(UUID uuid);
 

@@ -1,6 +1,5 @@
 package cx.ath.fota.dangerousFlight.listener;
 
-import cx.ath.fota.dangerousFlight.logger.DangerousLogger;
 import cx.ath.fota.dangerousFlight.model.DFlier;
 import cx.ath.fota.dangerousFlight.plugin.DangerousFlight;
 import cx.ath.fota.dangerousFlight.thread.PlayerDamagedThread;
@@ -18,9 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class DangerousListener implements Listener {
-    //todo THIS WHOLE THING NEEDS PERMISSIONS
     private final Map<Player, PlayerDamagedThread> playerThreadMap = new HashMap<Player, PlayerDamagedThread>();
     private final DangerousFlight dangerousFlight;
     private final int crippleDurationInSeconds;
@@ -28,18 +25,16 @@ public class DangerousListener implements Listener {
 
     public DangerousListener(DangerousFlight dangerousFlight) {
         int defaultCrippleDuration = 3;
-        int defaultCrippleStrength = 4;
+        int defaultCrippleStrength = 80;
         this.dangerousFlight = dangerousFlight;
         int crippleStrength = dangerousFlight.getNodeData("CrippleStrength", defaultCrippleStrength);
         this.crippleDurationInSeconds = dangerousFlight.getNodeData("CrippleDuration", defaultCrippleDuration);
         potionSlowEffect = new PotionEffect(PotionEffectType.SLOW, crippleDurationInSeconds * 20, crippleStrength);
     }
 
-
     @EventHandler
     public void onPlayerJoinEvent(PlayerJoinEvent playerJoinEvent) {
         Player player = playerJoinEvent.getPlayer();
-        DangerousLogger.debug(String.format("Player %s has joined the server!", player));
         PlayerDamagedThread playerDamagedThread = new PlayerDamagedThread(crippleDurationInSeconds);
         playerDamagedThread.run();
         playerThreadMap.put(player, playerDamagedThread);
@@ -47,16 +42,15 @@ public class DangerousListener implements Listener {
         if ((dFlier = dangerousFlight.getPersistence().findBuUUID(player.getUniqueId())) != null) {
             player.setAllowFlight(dFlier.getFlightEnabled());
             player.setFlying(dFlier.getFlying());
-            DangerousLogger.debug("Loaded Player: " + dFlier.toString());
+            dangerousFlight.logger.fine(String.format("Loaded Player: %s %s", player.getName(), dFlier.toString()));
         } else {
             player.setAllowFlight(false);
-            DangerousLogger.debug("Failed to load player: " + player.getDisplayName());
+            dangerousFlight.logger.fine(String.format("Failed to load Player: %s %s", player.getDisplayName(), player.getUniqueId()));
         }
     }
 
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent playerDeathEvent) {
-        DangerousLogger.debug(playerDeathEvent.getEntity().getDisplayName() + " died.");
         playerThreadMap.get(playerDeathEvent.getEntity()).playerDeath();
     }
 
@@ -67,17 +61,17 @@ public class DangerousListener implements Listener {
         playerThreadMap.remove(playerQuitEvent.getPlayer());
     }
 
-
     @EventHandler
     public void playerDamageEvent(EntityDamageEvent entityDamageEvent) {
         if (entityDamageEvent.getEntity() instanceof Player) {
             Player player = (Player) entityDamageEvent.getEntity();
-            //   if (player.hasPermission("${fly.permissions.node}")) ;
-            player.setFlying(false);
-            player.addPotionEffect(potionSlowEffect, true);
-            DangerousLogger.debug(player.getDisplayName() + " took damage.");
-            playerThreadMap.get(player).playerDamaged();
-
+            PlayerDamagedThread playerDamagedThread = playerThreadMap.get(player);
+            if (player.isFlying() || !playerDamagedThread.canFly()) {
+                player.setFlying(false);
+                player.addPotionEffect(potionSlowEffect, true);
+                dangerousFlight.logger.fine(player.getDisplayName() + " has been knocked out of the air");
+                playerDamagedThread.playerDamaged();
+            }
         }
     }
 
@@ -85,20 +79,12 @@ public class DangerousListener implements Listener {
     public void PlayerToggleFlight(PlayerToggleFlightEvent playerToggleFlightEvent) {
         Player player = playerToggleFlightEvent.getPlayer();
         PlayerDamagedThread playerDamagedThread = playerThreadMap.get(player);
-       /* DangerousLogger.debug("Player is flying " + player.isFlying());
-        DangerousLogger.debug("Player flight allowed " + player.getAllowFlight());
-        DangerousLogger.debug("\nThread can fly " + playerDamagedThread.canFly());
-        DangerousLogger.debug("\nPlayerToggleEvent " + playerToggleFlightEvent.isFlying() + "\n");*/
         playerToggleFlightEvent.setCancelled(!playerDamagedThread.canFly());
-//        DangerousLogger.debug("Player attempted flight :" + !playerDamagedThread.canFly());
-        if (!playerDamagedThread.canFly()) {
+        if (!playerDamagedThread.canFly())
             player.setFlying(false);
-        }
         DFlier dFlier = new DFlier(player);
         dFlier.setFlying(playerToggleFlightEvent.isFlying());
-//        DangerousLogger.debug(dFlier.toString());
         dangerousFlight.getPersistence().saveOrUpdate(dFlier);
+        dangerousFlight.logger.fine(player.getPlayerListName() + " " + dFlier.toString());
     }
-
-
 }

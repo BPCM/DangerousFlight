@@ -15,36 +15,29 @@ public class PlayerDamagedThread extends BukkitRunnable {
 
     private void playerDamagedLoop() {
         loopCounter = crippleInSeconds;
-        System.out.println("Player Damage Loop " + loopCounter);
         while (loopCounter > 0) {
-            System.out.println(Integer.toString(loopCounter) + " " + playerSignedIn);
             sleep();
             loopCounter--;
         }
         done();
     }
 
-
     private void sleep() {
         try {
             Thread.sleep(1000L);
         } catch (InterruptedException ignored) {
-            System.out.println("Interrupted sleep");
         }
     }
 
     private void done() {
-        System.out.println("canFly=true");
         canFly = true;
     }
 
     private void allowFlight() {
-        System.out.println("allowFlight entered " + playerSignedIn);
         synchronized (lock) {
             try {
                 lock.wait();
             } catch (InterruptedException ignore) {
-                System.out.println("Interrupted allow flight");
             }
         }
     }
@@ -55,20 +48,17 @@ public class PlayerDamagedThread extends BukkitRunnable {
             @Override
             public void run() {
                 while (playerSignedIn) {
-                    System.out.println("run loop started " + playerSignedIn);
                     if (!canFly) {
                         playerDamagedLoop();
                     }
                     allowFlight();
                 }
-                System.out.println("THIS THREAD IS DED");
             }
         });
         counter.start();
     }
 
     public void playerDamaged() {
-        System.out.println("Lock.notifyAll() called!");
         canFly = false;
         loopCounter = crippleInSeconds;
         synchronized (lock) {
@@ -81,7 +71,6 @@ public class PlayerDamagedThread extends BukkitRunnable {
     }
 
     public void playerSignedOut() {
-        System.out.println("Called Player signed out!");
         playerSignedIn = false;
         canFly = false;
         synchronized (lock) {
@@ -90,8 +79,8 @@ public class PlayerDamagedThread extends BukkitRunnable {
     }
 
     public void playerDeath() {
-        System.out.println("Death called!");
         loopCounter = 0;
         canFly = true;
+
     }
 }

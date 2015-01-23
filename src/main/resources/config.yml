@@ -1,4 +1,8 @@
-#Cripple Duration in seconds
-CrippleDuration: 3
-#Cripple strength
-CrippleStrength: 4
+#Cripple Duration (integer) in seconds
+CrippleDuration: 4
+#Cripple Strength (integer)
+CrippleStrength: 60
+#Flight speed
+NormalFlightSpeed: .1
+#Fast Flight Speed
+FastFlightSpeed: .3
